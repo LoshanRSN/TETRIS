@@ -1,0 +1,752 @@
+#load "graphics.cma";;
+open Graphics;;
+
+(* �cran titre *)
+
+let tableau_E x y = [|(x,y);(x,y+21);(x,y-21);(x+21,y-21);(x+21,y+21);(x,y+42);(x+21,y+42);(x+42,y+42);(x+42,y-21)|],0x5050FF;;
+
+let tableau_I x y = [|(x,y);(x,y+21);(x,y-21);(x,y+42)|],0x00FFFF;;
+
+let tableau_R x y = [|(x,y);(x-21,y);(x-21,y+21);(x-21,y-21);(x-21,y+42);(x,y+42);(x+21,y+21);(x+21,y-21);(x+21,y+42)|],0xFF0000;;
+
+let tableau_S x y = [|(x,y+42);(x+21,y+42);(x-21,y+21);(x-21,y+42);(x,y-21);(x+21,y);(x-21,y-21);(x+21,y-21)|],0xFFA500;;
+
+let tableau_T x y = [|(x,y);(x,y+42);(x+21,y+42);(x-21,y+42);(x,y+21);(x,y-21)|],0x800080;;
+
+
+let tableau_a x y = [|(x,y);(x-11,y);(x-11,y+11);(x-11,y-11);(x,y+22);(x+11,y+11);(x+11,y-11);(x+11,y)|];;
+
+let tableau_e x y = [|(x,y);(x,y+11);(x,y-11);(x+11,y-11);(x+11,y+11);(x,y+22);(x+11,y+22);(x+22,y+22);(x+22,y-11)|];;
+
+let tableau_g x y = [|(x,y-11);(x,y+22);(x-11,y-11);(x-11,y);(x-11,y+11);(x-11,y+22);(x+11,y-11);(x+11,y);(x+11,y+22)|];;
+
+let tableau_i x y = [|(x,y);(x,y+11);(x,y-11);(x,y+22)|];;
+
+let tableau_l x y = [|(x,y);(x,y+11);(x,y-11);(x,y+22);(x+11,y-11);(x+22,y-11)|];;
+
+let tableau_m x y = [|(x-11,y);(x-11,y-11);(x-11,y+11);(x-11,y+22);(x,y+11);(x+11,y+11);(x+11,y-11);(x+11,y);(x+11,y+22)|];;
+
+let tableau_o x y = [|(x,y-11);(x,y+22);(x-11,y-11);(x-11,y);(x-11,y+11);(x-11,y+22);(x+11,y-11);(x+11,y);(x+11,y+11);(x+11,y+22)|];;
+
+let tableau_p x y = [|(x+11,y+22);(x-11,y);(x-11,y+11);(x-11,y-11);(x-11,y+22);(x,y+22);(x+11,y+11);(x,y+11)|];;
+
+let tableau_q x y = [|(x,y);(x,y+22);(x-11,y+11);(x-11,y);(x-11,y+22);(x+11,y);(x+11,y+11);(x+11,y-11);(x+11,y+22)|];;
+
+let tableau_r x y = [|(x,y);(x-11,y);(x-11,y+11);(x-11,y-11);(x-11,y+22);(x,y+22);(x+11,y+11);(x+11,y-11);(x+11,y+22)|];;
+
+let tableau_t x y = [|(x,y);(x,y+22);(x+11,y+22);(x-11,y+22);(x,y+11);(x,y-11)|];;
+
+let tableau_u x y = [|(x,y-11);(x-11,y-11);(x-11,y+11);(x-11,y);(x-11,y+22);(x+11,y);(x+11,y+11);(x+11,y-11);(x+11,y+22)|];;
+
+let tableau_v x y = [|(x,y-11);(x-11,y+11);(x-11,y);(x-11,y+22);(x+11,y);(x+11,y+11);(x+11,y+22)|];;
+
+let tableau_y x y = [|(x,y);(x-11,y+11);(x+11,y+11);(x,y-11);(x+11,y+22);(x-11,y+22)|];;
+
+
+let trace piece = let tableau, color = piece in
+    set_color color;
+    for i = 0 to Array.length (tableau) - 1 do
+      let x, y = tableau.(i) in fill_rect (x - 10) (y - 10) 21 21;
+    done;
+    set_color black;
+    for i = 0 to Array.length (tableau) - 1 do
+      let x, y = tableau.(i) in draw_rect (x - 10) (y - 10) 21 21;
+    done;;
+
+let trace_minus tableau color =
+  set_color color;
+  for i = 0 to Array.length (tableau) - 1 do
+    let x, y = tableau.(i) in fill_rect (x - 5) (y - 5) 11 11;
+  done;
+  set_color black;
+  for i = 0 to Array.length (tableau) - 1 do
+    let x, y = tableau.(i) in draw_rect (x - 5) (y - 5) 11 11;
+  done;;
+
+
+let trace_TETRIS () =
+  trace (tableau_T ((size_x ()) / 2 - 21 * 9) (size_y () * 3 / 4));
+  trace (tableau_E ((size_x ()) / 2 - 21 * 6) (size_y () * 3 / 4));
+  trace (tableau_T ((size_x ()) / 2 - 21 * 1) (size_y () * 3 / 4));
+  trace (tableau_R ((size_x ()) / 2 + 21 * 3) (size_y () * 3 / 4));
+  trace (tableau_I ((size_x ()) / 2 + 21 * 6) (size_y () * 3 / 4));
+  trace (tableau_S ((size_x ()) / 2 + 21 * 9) (size_y () * 3 / 4));;
+
+let trace_play color =
+  trace_minus (tableau_p ((size_x ()) / 2 - 11 * 6) (size_y () * 2 / 5)) color;
+  trace_minus (tableau_l ((size_x ()) / 2 - 11 * 3) (size_y () * 2 / 5)) color;
+  trace_minus (tableau_a ((size_x ()) / 2 + 11 * 2) (size_y () * 2 / 5)) color;
+  trace_minus (tableau_y ((size_x ()) / 2 + 11 * 6) (size_y () * 2 / 5)) color;;
+
+let trace_quit color =
+  trace_minus (tableau_q ((size_x ()) / 2 - 11 * 5) (size_y () * 1 / 5)) color;
+  trace_minus (tableau_u ((size_x ()) / 2 - 11 * 1) (size_y () * 1 / 5)) color;
+  trace_minus (tableau_i ((size_x ()) / 2 + 11 * 2) (size_y () * 1 / 5)) color;
+  trace_minus (tableau_t ((size_x ()) / 2 + 11 * 5) (size_y () * 1 / 5)) color;;
+
+let trace_level color =
+  trace_minus (tableau_l ((size_x ()) / 2 - 11 * 9) (size_y () * 3 / 4)) color;
+  trace_minus (tableau_e ((size_x ()) / 2 - 11 * 5) (size_y () * 3 / 4)) color;
+  trace_minus (tableau_v ((size_x ()) / 2) (size_y () * 3 / 4)) color;
+  trace_minus (tableau_e ((size_x ()) / 2 + 11 * 3) (size_y () * 3 / 4)) color;
+  trace_minus (tableau_l ((size_x ()) / 2 + 11 * 7) (size_y () * 3 / 4)) color;;
+
+let trace_game_over color =
+  trace_minus (tableau_g ((size_x () )/2 - 11*16) (size_y ()*3/4)) color;
+  trace_minus (tableau_a ((size_x () )/2 - 11*12) (size_y ()*3/4)) color;
+  trace_minus (tableau_m ((size_x () )/2 - 11*8) (size_y ()*3/4)) color;
+  trace_minus (tableau_e ((size_x () )/2 - 11*5) (size_y ()*3/4)) color;
+  trace_minus (tableau_o ((size_x () )/2 + 11*4) (size_y ()*3/4)) color;
+  trace_minus (tableau_v ((size_x () )/2 + 11*8) (size_y ()*3/4)) color;
+  trace_minus (tableau_e ((size_x () )/2 + 11*11) (size_y ()*3/4)) color;
+  trace_minus (tableau_r ((size_x () )/2 + 11*16) (size_y ()*3/4)) color;;
+
+let set_bckgrnd color = set_color color; fill_rect 0 0 (size_x ()) (size_y ());;
+
+(* Tout ce qui concerne la partie score&Co*)
+let game_over_ou_pas () = let rec f accu = match accu with
+      | 9 -> false
+      | _ -> if point_color (73 + accu * 21) 493 = 16777215 then f (accu + 1) else true
+  in f 0;;
+
+let top_3_meilleure_score = [|0; 0; 0|];;
+
+let score_actuel = [|0|];;
+
+let points_attribrue = [|40; 100; 300; 1200|];;
+
+let nombre_de_ligne_detruit = [|0|];;
+
+let rapidite = [|1.; 0.8; 0.6; 0.4; 0.3; 0.2; 0.1|];;
+
+let nombre_de_piece = [|0|];;
+
+let indication_de_niveaux = [|0|];;
+
+let true_or_false = [|true|];;
+
+let ajout_ou_non_du_nouveau_score () =
+  let a = top_3_meilleure_score.(0) and b = top_3_meilleure_score.(1) and c = top_3_meilleure_score.(2) and nouveau_score = score_actuel.(0) in
+    match nouveau_score with
+      | n when n >= a -> top_3_meilleure_score.(0) <- n; top_3_meilleure_score.(1) <- a; top_3_meilleure_score.(2) <- b; top_3_meilleure_score;
+      | n when n >= b -> top_3_meilleure_score.(1) <- n; top_3_meilleure_score.(2) <- b; top_3_meilleure_score;
+      | n when n >= c -> top_3_meilleure_score.(2) <- n; top_3_meilleure_score;
+      | _ -> top_3_meilleure_score;;
+
+let ajout_au_score valeur = let t = score_actuel.(0) in score_actuel.(0) <- t + valeur;;
+
+let meilleure_score_depassee_ou_pas () = let p=score_actuel.(0) and q=top_3_meilleure_score.(0) in 
+if p<q then q else p;;
+
+
+(*Affichage des scores & et des nombres en g�n�rales*) 
+
+let tableau_0 = [|true;true;false;true;true;true;true|];;
+
+let tableau_1 = [|false;false;false;true;false;false;true|];;
+
+let tableau_2 = [|true;false;true;true;true;true;false|];;
+
+let tableau_3 = [|true;false;true;true;false;true;true|];;
+
+let tableau_4 = [|false;true;true;true;false;false;true|];;
+
+let tableau_5 = [|true;true;true;false;false;true;true|];;
+
+let tableau_6 = [|true;true;true;false;true;true;true|];;
+
+let tableau_7 = [|true;false;false;true;false;false;true|];;
+
+let tableau_8 = [|true;true;true;true;true;true;true|];;
+
+let tableau_9 = [|true;true;true;true;false;true;true|];;
+
+let tableau_nbr = [|tableau_0;tableau_1;tableau_2;tableau_3;tableau_4;tableau_5;tableau_6;tableau_7;tableau_8;tableau_9|];;
+
+let trace_rect index x y color = set_color color;
+match index with
+|0 -> fill_rect (x-5) (y+14) 11 5; fill_rect (x-6) (y+15) 13 3
+|1 -> fill_rect (x-10) (y+3) 5 11; fill_rect (x-9) (y+2) 3 13
+|2 -> fill_rect (x-5) (y-2) 11 5; fill_rect (x-6) (y-1) 13 3
+|3 -> fill_rect (x+6) (y+3) 5 11; fill_rect (x+7) (y+2) 3 13
+|4 -> fill_rect (x-10) (y-13) 5 11; fill_rect (x-9) (y-14) 3 13
+|5 -> fill_rect (x-5) (y-18) 11 5; fill_rect (x-6) (y-17) 13 3
+|6 -> fill_rect (x+6) (y-13) 5 11; fill_rect (x+7) (y-14) 3 13
+|_ -> failwith "Not a valid index";;
+
+let trace_nbr tableau true_color false_color x y = for i=0 to 6 do
+if tableau.(i)
+then ( trace_rect i x y true_color )
+else ( trace_rect i x y false_color )
+done;;
+
+let mini_trace_rect index x y color = set_color color;
+match index with
+|0 -> fill_rect (x-3) (y+9) 7 3; fill_rect (x-4) (y+10) 9 1
+|1 -> fill_rect (x-6) (y+2) 3 7; fill_rect (x-5) (y+1) 1 9
+|2 -> fill_rect (x-3) (y-1) 7 3; fill_rect (x-4) (y) 9 1
+|3 -> fill_rect (x+4) (y+2) 3 7; fill_rect (x+5) (y+1) 1 9
+|4 -> fill_rect (x-6) (y-8) 3 7; fill_rect (x-5) (y-9) 1 9
+|5 -> fill_rect (x-3) (y-11) 7 3; fill_rect (x-4) (y-10) 9 1
+|6 -> fill_rect (x+4) (y-8) 3 7; fill_rect (x+5) (y-9) 1 9
+|_ -> failwith "Not a valid index";;
+
+let mini_trace_nbr tableau true_color false_color x y = for i=0 to 6 do
+if tableau.(i)
+then ( mini_trace_rect i x y true_color )
+else ( mini_trace_rect i x y false_color )
+done;;
+let rec fonction_decompose_base_10 numero = match numero with 
+| 0 ->[ 0 ]
+| _ -> numero mod 10 :: fonction_decompose_base_10 (numero/10);;
+
+
+let rec trace_numero x y liste  couleur_nombre couleur_fond  = match liste with 
+|[] -> ()
+|t::q -> mini_trace_nbr tableau_nbr.(t) couleur_nombre couleur_fond x y ; trace_numero (x-17) y q couleur_nombre couleur_fond;;
+
+
+let trace_le_nombre x y nombre_a_trace couleur_fond couleur_nombre  = trace_numero x y (fonction_decompose_base_10 nombre_a_trace) couleur_nombre couleur_fond;;
+
+let affichage_des_scores () = 
+let cubes x y = 
+set_color  0xF0F0F0;
+fill_rect x y 110 55;
+set_color 0x303030 ;
+draw_rect (x-1) (y-1) 111 56;draw_rect (x-2) (y-2) 113 58;draw_rect (x-3) (y-3) 115 60;
+set_color 0xF0F0F0 ;
+draw_rect (x-4) (y-4) 117 62;draw_rect (x-5) (y-5) 119 64;draw_rect (x-6) (y-6) 121 66;
+set_color 0x000000 ;
+draw_rect (x-7) (y-7) 123 68;draw_rect (x-8) (y-8) 125 70;draw_rect (x-9) (y-9) 127 72;
+trace_le_nombre (x+100) (y+14) score_actuel.(0)  0xF0F0F0 0x000000;
+set_text_size 25;
+set_color 0x000000;
+moveto (x+20) (y+30); 
+draw_string "SCORE";
+
+set_color 0xF0F0F0;
+fill_rect x (y+80) 110 55;
+set_color 0x303030 ;
+draw_rect (x-1) (y+79) 111 56;draw_rect (x-2) (y+78) 113 58;draw_rect (x-3) (y+77) 115 60;
+set_color 0xF0F0F0 ;
+draw_rect (x-4) (y+76) 117 62;draw_rect (x-5) (y+75) 119 64;draw_rect (x-6) (y+74) 121 66;
+set_color 0x000000 ;
+draw_rect (x-7) (y+73) 123 68;draw_rect (x-8) (y+72) 125 70;draw_rect (x-9) (y+71) 127 72;
+trace_le_nombre (x+100) (y+94) (indication_de_niveaux.(0)) 0xF0F0F0 0x000000;
+set_color 0x000000;
+moveto (x+20) (y+110); 
+draw_string "LEVEL";
+
+set_color 0xF0F0F0;
+fill_rect x (y+160) 110 55;
+set_color 0x303030 ;
+draw_rect (x-1) (y+159) 111 56;draw_rect (x-2) (y+158) 113 58;draw_rect (x-3) (y+157) 115 60;
+set_color 0xF0F0F0 ;
+draw_rect (x-4) (y+156) 117 62;draw_rect (x-5) (y+155) 119 64;draw_rect (x-6) (y+154) 121 66;
+set_color 0x000000 ;
+draw_rect (x-7) (y+153) 123 68;draw_rect (x-8) (y+152) 125 70;draw_rect (x-9) (y+151) 127 72;
+trace_le_nombre (x+100) (y+174) (nombre_de_ligne_detruit.(0)) 0xF0F0F0 0x000000;
+set_color 0x000000;
+moveto (x+20) (y+190); 
+draw_string "LINES" ;
+
+set_color  0xF0F0F0;
+fill_rect x (y-80) 110 55;
+set_color 0x303030 ;
+draw_rect (x-1) (y-81) 111 56;draw_rect (x-2) (y-82) 113 58;draw_rect (x-3) (y-83) 115 60;
+set_color 0xF0F0F0 ;
+draw_rect (x-4) (y-84) 117 62;draw_rect (x-5) (y-85) 119 64;draw_rect (x-6) (y-86) 121 66;
+set_color 0x000000 ;
+draw_rect (x-7) (y-87) 123 68;draw_rect (x-8) (y-88) 125 70;draw_rect (x-9) (y-89) 127 72;
+trace_le_nombre (x+100) (y-66) (meilleure_score_depassee_ou_pas ())  0xF0F0F0 0x000000;
+set_text_size 25;
+set_color 0x000000;
+moveto (x+24) (y-48); 
+
+draw_string "HIGH";
+
+
+in cubes 337 180;;
+
+let affichage_high_score_sur_game_over x y = 
+set_color  0xF0F0F0;
+fill_rect x y 110 55;
+set_color 0x303030 ;
+draw_rect (x-1) (y-1) 111 56;draw_rect (x-2) (y-2) 113 58;draw_rect (x-3) (y-3) 115 60;
+set_color 0xF0F0F0 ;
+draw_rect (x-4) (y-4) 117 62;draw_rect (x-5) (y-5) 119 64;draw_rect (x-6) (y-6) 121 66;
+set_color 0x000000 ;
+draw_rect (x-7) (y-7) 123 68;draw_rect (x-8) (y-8) 125 70;draw_rect (x-9) (y-9) 127 72;
+trace_le_nombre (x+100) (y+13) top_3_meilleure_score.(0)  0xF0F0F0 0x000000;
+set_text_size 35;
+set_color (rgb 204 85 0);
+moveto (x+30) (y+20); 
+draw_string "1";
+set_text_size 25;
+moveto (x+50) (y+23);
+draw_string "st";
+
+set_color  0xF0F0F0;
+fill_rect x (y-70) 110 55;
+set_color 0x303030 ;
+draw_rect (x-1) (y-71) 111 56;draw_rect (x-2) (y-72) 113 58;draw_rect (x-3) (y-73) 115 60;
+set_color 0xF0F0F0 ;
+draw_rect (x-4) (y-74) 117 62;draw_rect (x-5) (y-75) 119 64;draw_rect (x-6) (y-76) 121 66;
+set_color 0x000000 ;
+draw_rect (x-7) (y-77) 123 68;draw_rect (x-8) (y-78) 125 70;draw_rect (x-9) (y-79) 127 72;
+trace_le_nombre (x+100) (y-57) top_3_meilleure_score.(1)  0xF0F0F0 0x000000;
+set_text_size 35;
+set_color (rgb 204 85 0);
+moveto (x+30) (y-50); 
+draw_string "2";
+set_text_size 25;
+moveto (x+50) (y-47);
+draw_string "nd";
+
+set_color  0xF0F0F0;
+fill_rect x (y-140) 110 55;
+set_color 0x303030 ;
+draw_rect (x-1) (y-140) 111 56;draw_rect (x-2) (y-141) 113 58;draw_rect (x-3) (y-142) 115 60;
+set_color 0xF0F0F0 ;
+draw_rect (x-4) (y-143) 117 62;draw_rect (x-5) (y-144) 119 64;draw_rect (x-6) (y-145) 121 66;
+set_color 0x000000 ;
+draw_rect (x-7) (y-146) 123 68;draw_rect (x-8) (y-147) 125 70;draw_rect (x-9) (y-148) 127 72;
+trace_le_nombre (x+100) (y-126) top_3_meilleure_score.(2)  0xF0F0F0 0x000000;
+set_text_size 35;
+set_color (rgb 204 85 0);
+moveto (x+30) (y-118); 
+draw_string "3";
+set_text_size 25;
+moveto (x+50) (y-114);
+draw_string "rd";;
+
+
+let trace_la_limite x y = 
+set_color red;
+moveto x y ; 
+lineto (x+209) y;
+moveto x (y+1);
+lineto (x+209) (y+1);
+moveto x (y-1);
+lineto (x+209) (y-1);;
+
+(* Trac� des pi�ces principales *)
+
+let tableau_piece_i x y mode = match mode with
+    | m when m mod 2 = 1 -> [|(x, y); (x - 21, y); (x - 42, y); (x + 21, y)|], 0x00FFFF
+    | _ -> [|(x, y); (x, y + 21); (x, y - 21); (x, y - 42)|], 0x00FFFF;;
+
+let tableau_piece_l x y mode = match mode with
+    | m when m mod 4 = 0 -> [|(x, y); (x, y + 21); (x, y - 21); (x + 21, y - 21)|], 0xFFA500
+    | m when m mod 4 = 1 -> [|(x, y); (x + 21, y); (x - 21, y); (x - 21, y - 21)|], 0xFFA500
+    | m when m mod 4 = 2 -> [|(x, y); (x, y + 21); (x, y - 21); (x - 21, y + 21)|], 0xFFA500
+    | _ -> [|(x, y); (x + 21, y); (x - 21, y); (x + 21, y + 21)|], 0xFFA500;;
+
+let tableau_piece_j x y mode = match mode with
+    | m when m mod 4 = 2 -> [|(x, y); (x, y + 21); (x, y - 21); (x + 21, y + 21)|], 0x5050FF
+    | m when m mod 4 = 1 -> [|(x, y); (x + 21, y); (x - 21, y); (x - 21, y + 21)|], 0x5050FF
+    | m when m mod 4 = 0 -> [|(x, y); (x, y + 21); (x, y - 21); (x - 21, y - 21)|], 0x5050FF
+    | _ -> [|(x, y); (x + 21, y); (x - 21, y); (x + 21, y - 21)|], 0x5050FF;;
+
+let tableau_piece_s x y mode = match mode with
+    | m when m mod 2 = 0 -> [|(x, y); (x + 21, y); (x, y - 21); (x - 21, y - 21)|], 0x00FF00
+    | _ -> [|(x, y); (x, y + 21); (x + 21, y); (x + 21, y - 21)|], 0x00FF00;;
+
+let tableau_piece_z x y mode = match mode with
+    | m when m mod 2 = 0 -> [|(x, y); (x - 21, y); (x, y - 21); (x + 21, y - 21)|], 0xFF0000
+    | _ -> [|(x, y); (x, y - 21); (x + 21, y); (x + 21, y + 21)|], 0xFF0000;;
+
+let tableau_piece_o x y mode = [|(x, y); (x, y + 21); (x + 21, y + 21); (x + 21, y)|], 0xFCE205;;
+
+let tableau_piece_t x y mode = match mode with
+    | m when m mod 4 = 0 -> [|(x, y); (x + 21, y); (x - 21, y); (x, y + 21)|], 0x800080
+    | m when m mod 4 = 1 -> [|(x, y); (x, y + 21); (x, y - 21); (x + 21, y)|], 0x800080
+    | m when m mod 4 = 2 -> [|(x, y); (x + 21, y); (x - 21, y); (x, y - 21)|], 0x800080
+    | _ -> [|(x, y); (x, y + 21); (x, y - 21); (x - 21, y)|], 0x800080;;
+
+let trace piece = let tableau, color = piece in
+    set_color color;
+    for i = 0 to 3 do
+      let x, y = tableau.(i) in fill_rect (x - 10) (y - 10) 21 21;
+    done;
+    set_color black;
+    for i = 0 to 3 do
+      let x, y = tableau.(i) in draw_rect (x - 10) (y - 10) 21 21;
+    done;;
+
+let eff piece = let tableau, color = piece in
+    set_color white;
+    for i = 0 to 3 do
+      let x, y = tableau.(i) in fill_rect (x - 10) (y - 10) 21 21;
+    done;
+    set_color black;
+    for i = 0 to 3 do
+      let x, y = tableau.(i) in draw_rect (x - 10) (y - 10) 21 21;
+    done;;
+(* traces et effaces des pieces secondaires => affichage des prochaines pi�ces*)
+let tableau_petite_piece_i x y = [|(x, y); (x, y + 11); (x, y - 11); (x, y - 22)|], 0x00FFFF;;
+
+let tableau_petite_piece_l x y = [|(x, y); (x, y + 11); (x, y - 11); (x + 11, y - 11)|], 0xFFA500;;
+
+let tableau_petite_piece_j x y = [|(x, y); (x, y + 11); (x, y - 11); (x - 11, y - 11)|], 0x5050FF;;
+
+let tableau_petite_piece_s x y = [|(x, y); (x + 11, y); (x, y - 11); (x - 11, y - 11)|], 0x00FF00;;
+
+let tableau_petite_piece_z x y = [|(x, y); (x - 11, y); (x, y - 11); (x + 11, y - 11)|], 0xFF0000;;
+
+let tableau_petite_piece_o x y = [|(x, y); (x, y + 11); (x + 11, y + 11); (x + 11, y)|], 0xFCE205;;
+
+let tableau_petite_piece_t x y = [|(x, y); (x + 11, y); (x - 11, y); (x, y + 11)|], 0x800080;;
+
+let affichage_petite_piece x y = [|(x,y); (x+11,y); (x-11,y);(x-22,y);(x,y+11); (x+11,y+11); (x-11,y+11);(x-22,y+11);(x,y-11); (x+11,y-11); (x-11,y-11);(x-22,y-11);(x,y-22); (x+11,y-22); (x-11,y-22);(x-22,y-22)|];;
+
+let petite_trace piece = let tableau, color = piece in
+    set_color color;
+    for i = 0 to 3 do
+      let x, y = tableau.(i) in fill_rect (x - 5) (y - 5) 11 11;
+    done;
+    set_color black;
+    for i = 0 to 3 do
+      let x, y = tableau.(i) in draw_rect (x - 5) (y - 5) 11 11;
+    done;;
+
+let petite_eff piece = let tableau, color = piece in
+    set_color white;
+    for i = 0 to 3 do
+      let x, y = tableau.(i) in fill_rect (x - 5) (y - 5) 11 11;
+    done;
+    set_color black;
+    for i = 0 to 3 do
+      let x, y = tableau.(i) in draw_rect (x - 5) (y - 5) 11 11;
+    done;;
+    
+let trace_petite_piece_affichage x y =
+		let tableau = affichage_petite_piece x y in 
+		set_color white;
+    for i = 0 to 15 do
+      let x, y = tableau.(i) in fill_rect (x - 5) (y - 5) 11 11;
+    done;
+    set_color black;
+    for i = 0 to 15 do
+      let x, y = tableau.(i) in draw_rect (x - 5) (y - 5) 11 11;
+    done;;
+
+let trace_lvl_screen color bckgrnd = 
+trace_level color;
+for i= -3 to 3 do
+trace_nbr tableau_nbr.(i+4) color bckgrnd (size_x ()/2 +i*size_x ()/10) (size_y ()*2/5);
+set_color color;
+draw_rect (size_x ()/2 +i*size_x ()/10 -20) (size_y ()*2/5 -28) 40 56;
+draw_rect (size_x ()/2 +i*size_x ()/10 -19) (size_y ()*2/5 -27) 38 54;
+done;;
+
+let game_over_screen () =
+ajout_ou_non_du_nouveau_score ();
+open_graph "720x630";
+set_window_title "Tetris par Loshan et Ramadan"; 
+set_bckgrnd 0x051036; 
+trace_game_over 0xFEE12B;
+affichage_high_score_sur_game_over 306 310;;
+
+
+(*fonction qui verifie si une ligne est compl�te et fait le travail*)
+
+let copiteur x y =
+  let color = point_color x (y + 21) in
+    set_color color;
+    fill_rect (x - 10) (y - 10) 21 21;
+    set_color black;
+    draw_rect (x - 10) (y - 10) 21 21;;
+
+let desc_tout x y =
+  let rec ligne x y = match y with
+      | y when y = 430 -> for i = 0 to 9 do
+            copiteur (x + i * 21) y;
+          done;
+      | _ -> for i = 0 to 9 do copiteur (x + i * 21) y;
+          done;
+          ligne x (y + 21)
+  in ligne x y;;
+
+let rec combo_bloc x y combo combo_score = let color = point_color x y in match color with (* Premi�re version qui match sur la couleur, boucle r�cursive *)
+      | 0xFFFFFF when y = 73 -> if combo_score = 0 then () else (
+              ajout_au_score points_attribrue.(combo_score - 1);
+              let t = nombre_de_ligne_detruit.(0) in nombre_de_ligne_detruit.(0) <- (t + combo_score);
+              affichage_des_scores ();)
+      | 0xFFFFFF -> combo_bloc (x - combo * 21) (y - 21) 0 combo_score
+      | color when y = 73 -> if (combo = 9) then begin
+              (sound 330 40; sound 413 40; sound 528 40; desc_tout (x - 189) y);
+              ajout_au_score (points_attribrue.(combo_score));
+              (let t = nombre_de_ligne_detruit.(0) in nombre_de_ligne_detruit.(0) <- (t + combo_score + 1);
+              affichage_des_scores ();)
+            end
+          else (combo_bloc (x + 21) y (combo + 1) combo_score)
+      | color -> if (combo = 9) then (sound 330 40; sound 413 40; sound 528 40; desc_tout (x - 189) y; combo_bloc (x - 189) (y - 21) 0 (combo_score + 1)) else (combo_bloc (x + 21) y (combo + 1) combo_score);;
+
+
+let copiteur_a_usage_unique x y =
+  set_color white;
+  fill_rect (x - 10) (y - 10) 21 21;
+  set_color black;
+  draw_rect (x - 10) (y - 10) 21 21;;
+
+let trace_quadrillage () = let rec ligne x y = match y with
+      | y when y = 556 -> for i = 0 to 9 do
+            copiteur_a_usage_unique (x + i * 21) y;
+          done;
+      | _ -> for i = 0 to 9 do copiteur_a_usage_unique (x + i * 21) y;
+          done;
+          ligne x (y + 21);
+  in ligne 73 73;;
+
+
+(* corps principal du jeu *)
+
+let envoie_le_bon_tableau x y mode piece = match piece with
+  (*piece i *)
+    | p when p = 0 -> let t, q = tableau_piece_i x y mode in t
+          (*piece l *)
+    | p when p = 1 -> let t, q = tableau_piece_l x y mode in t
+          (*piece j *)
+    | p when p = 2 -> let t, q = tableau_piece_j x y mode in t
+          (*piece s *)
+    | p when p = 3 -> let t, q = tableau_piece_s x y mode in t
+          (*piece z *)
+    | p when p = 4 -> let t, q = tableau_piece_z x y mode in t
+          (*piece o *)
+    | p when p = 5 -> let t, q = tableau_piece_o x y mode in t
+          (*piece t *)
+    | _ -> let t, q = tableau_piece_t x y mode in t;;
+
+
+let fonction_detection_environnement x y mode piece =
+  let tableau = envoie_le_bon_tableau x y mode piece in
+    let a, b = tableau.(0) and c, d = tableau.(1) and e, f = tableau.(2) and g, h = tableau.(3) in
+      if point_color a b = 16777215 && point_color c d = 16777215 && point_color e f = 16777215 && point_color g h = 16777215 then true
+      else false;;
+
+let rec desc_piece tableau_piece x y mode piece vitesse =
+  let f tableau accu =
+    trace (tableau_piece x y mode);
+    while (Sys.time ()) < (accu +. vitesse) do
+      let k = tableau.(0) and l = tableau.(1) and m = tableau.(2) in
+        if (key_pressed ()) then
+          match read_key () with
+            | 'q' -> eff (tableau_piece k l m);
+                if fonction_detection_environnement (k - 21) l m piece then begin
+                    trace (tableau_piece (k - 21) l m);
+                    tableau.(0) <- (k - 21); end
+                else trace (tableau_piece k l m)
+            | 'd' -> eff (tableau_piece k l m);
+                if fonction_detection_environnement (k + 21) l m piece then begin
+                    trace (tableau_piece (k + 21) l m);
+                    tableau.(0) <- (k + 21); end
+                else trace (tableau_piece k l m)
+            | 's' -> eff (tableau_piece k l m);
+                if fonction_detection_environnement k (l - 21) m piece then begin
+                    trace (tableau_piece k (l - 21) m);
+                    tableau.(1) <- (l - 21); end
+                else trace (tableau_piece k l m)
+            | 'z' -> eff (tableau_piece k l m);
+                while fonction_detection_environnement k (tableau.(1) - 21) m piece do let g = tableau.(1) in
+                    tableau.(1) <- (g - 21);
+                    trace (tableau_piece k (g-21) m);
+                    eff (tableau_piece k (g-21) m);
+                    done;
+            | ' ' -> sound 220 10;
+                sound 370 40;
+                eff (tableau_piece k l m);
+                if fonction_detection_environnement k l (m + 1) piece then begin
+                    trace (tableau_piece k l (m + 1));
+                    tableau.(2) <- (m + 1); end
+                else trace (tableau_piece k l m)
+            | _ -> trace (tableau_piece k l m)
+    done;
+    let k = tableau.(0) and l = tableau.(1) and m = tableau.(2) in
+    	trace_la_limite 64 483;
+      eff (tableau_piece k l m);
+      if fonction_detection_environnement k (l - 21) m piece then
+        desc_piece tableau_piece k (l - 21) m piece vitesse
+      else
+        trace (tableau_piece k l m)
+  in f ([|x; y; mode|]) (Sys.time ());;
+
+let lancement_piece piece le_bon_tableau maintenant vitesse = match piece with
+    | 0 -> petite_trace (tableau_petite_piece_i 400 500); desc_piece le_bon_tableau 178 535 0 maintenant vitesse;
+    | 1 -> petite_trace (tableau_petite_piece_l 400 500); desc_piece le_bon_tableau 178 535 0 maintenant vitesse;
+    | 2 -> petite_trace (tableau_petite_piece_j 400 500); desc_piece le_bon_tableau 178 535 0 maintenant vitesse;
+    | 3 -> petite_trace (tableau_petite_piece_s 400 500); desc_piece le_bon_tableau 178 535 0 maintenant vitesse;
+    | 4 -> petite_trace (tableau_petite_piece_z 400 500); desc_piece le_bon_tableau 178 535 0 maintenant vitesse;
+    | 5 -> petite_trace (tableau_petite_piece_o 400 500); desc_piece le_bon_tableau 178 535 0 maintenant vitesse;
+    | _ -> petite_trace (tableau_petite_piece_t 400 500); desc_piece le_bon_tableau 178 535 0 maintenant vitesse;;
+
+(* programme cerveau qui commande l'ensemble*)
+
+let mise_en_page_interface () = 
+trace_quadrillage ();
+trace_petite_piece_affichage 400 500;
+moveto 378 527;
+set_text_size 15;
+set_color black;
+draw_string "NEXT";
+set_color 0x303030 ;
+draw_rect 62 62 212 506;draw_rect 61 61 214 508;draw_rect 60 60 216 510;
+draw_rect 372 472 46 46;draw_rect 371 471 48 48;draw_rect 370 470 50 50;
+set_color 0xF0F0F0 ;
+draw_rect 59 59 218 512;draw_rect 58 58 220 514;draw_rect 57 57 222 516;
+draw_rect 369 469 52 52;draw_rect 368 468 54 54;draw_rect 367 467 56 56;
+set_color 0x000000 ;
+draw_rect 56 56 224 518;draw_rect 55 55 226 520;draw_rect 54 54 228 522;
+draw_rect 366 466 58 58;draw_rect 365 465 60 60;draw_rect 364 464 62 62;;
+
+
+let programme_ultime niveaux =
+  let f suivant =
+    indication_de_niveaux.(0) <- (0);
+    open_graph "720x630";
+    set_window_title "Tetris par Loshan et Ramadan";
+    set_bckgrnd 0xA0A0A0;
+    score_actuel.(0) <- 0;
+    nombre_de_ligne_detruit.(0) <- 0;
+    nombre_de_piece.(0) <- 0;
+    indication_de_niveaux.(0) <- niveaux;
+    true_or_false.(0) <- true;
+    mise_en_page_interface ();
+    affichage_des_scores ();
+    while true_or_false.(0) do
+      if game_over_ou_pas () then (true_or_false.(0)<- false )
+      else
+        (let t = nombre_de_piece.(0) and q = nombre_de_ligne_detruit.(0) in
+         ( nombre_de_piece.(0) <- (t + 1);
+         combo_bloc 73 430 0 0;
+          (if q+niveaux*10<71 then indication_de_niveaux.(0) <- ((q / 10) + niveaux)
+          else indication_de_niveaux.(0) <- 7);
+            (let piece = (Random.int 7) and maintenant = suivant.(0) and niv = (indication_de_niveaux.(0)-1) in
+              (suivant.(0) <- piece;
+              (let vitesse = rapidite.(niv) in
+                  (match maintenant with
+                    | 0 -> petite_eff (tableau_petite_piece_i 400 500); lancement_piece piece tableau_piece_i maintenant vitesse;
+                    | 1 -> petite_eff (tableau_petite_piece_l 400 500); lancement_piece piece tableau_piece_l maintenant vitesse;
+                    | 2 -> petite_eff (tableau_petite_piece_j 400 500); lancement_piece piece tableau_piece_j maintenant vitesse;
+                    | 3 -> petite_eff (tableau_petite_piece_s 400 500); lancement_piece piece tableau_piece_s maintenant vitesse;
+                    | 4 -> petite_eff (tableau_petite_piece_z 400 500); lancement_piece piece tableau_piece_z maintenant vitesse;
+                    | 5 -> petite_eff (tableau_petite_piece_o 400 500); lancement_piece piece tableau_piece_o maintenant vitesse;
+                    | _ -> petite_eff (tableau_petite_piece_t 400 500); lancement_piece piece tableau_piece_t maintenant vitesse;));));))
+    done;
+    game_over_screen ();
+  in f [|(Random.int 7)|];;
+
+let selec_lvl () =
+open_graph"720x440";
+set_window_title "Tetris par Loshan et Ramadan"; 
+set_bckgrnd 0x051036; 
+trace_lvl_screen 0xFEE12B 0x051036;
+while true do 
+let x,y = mouse_pos () in x,y;
+    let x1,y1 = (size_x ()/2 -3*size_x ()/10 -20),(size_y ()*2/5 -28) in 
+if ( (x1<x) && (x<(x1+40)) && (y1<y) && (y<(y1+56)) && button_down () )
+then ((*do*)sound 264 40;
+(*mi*)sound 330 40;
+(*la*)sound 440 40;
+(*mi*)sound 330 40;
+(*la*)sound 440 40;
+(*si*)sound 495 40;
+(*la*)sound 440 40;
+(*si*)sound 495 40;
+(*mi+1*)sound 660 40;close_graph ();programme_ultime 1)
+else ();
+    let x2,y2 = (size_x ()/2 -2*size_x ()/10 -20),(size_y ()*2/5 -28) in 
+if ( (x2<x) && (x<(x2+40)) && (y2<y) && (y<(y2+56)) && button_down () )
+then ((*do*)sound 264 40;
+(*mi*)sound 330 40;
+(*la*)sound 440 40;
+(*mi*)sound 330 40;
+(*la*)sound 440 40;
+(*si*)sound 495 40;
+(*la*)sound 440 40;
+(*si*)sound 495 40;
+(*mi+1*)sound 660 40;close_graph ();programme_ultime 2)
+else ();
+    let x3,y3 = (size_x ()/2 -1*size_x ()/10 -20),(size_y ()*2/5 -28) in 
+if ( (x3<x) && (x<(x3+40)) && (y3<y) && (y<(y3+56)) && button_down () )
+then ((*do*)sound 264 40;
+(*mi*)sound 330 40;
+(*la*)sound 440 40;
+(*mi*)sound 330 40;
+(*la*)sound 440 40;
+(*si*)sound 495 40;
+(*la*)sound 440 40;
+(*si*)sound 495 40;
+(*mi+1*)sound 660 40;close_graph ();programme_ultime 3)
+else ();
+    let x4,y4 = (size_x ()/2),(size_y ()*2/5 -28) in 
+if ( (x4<x) && (x<(x4+40)) && (y4<y) && (y<(y4+56)) && button_down () )
+then ((*do*)sound 264 40;
+(*mi*)sound 330 40;
+(*la*)sound 440 40;
+(*mi*)sound 330 40;
+(*la*)sound 440 40;
+(*si*)sound 495 40;
+(*la*)sound 440 40;
+(*si*)sound 495 40;
+(*mi+1*)sound 660 40;close_graph ();programme_ultime 4)
+else ();
+    let x5,y5 = (size_x ()/2 +1*size_x ()/10 -20),(size_y ()*2/5 -28) in 
+if ( (x5<x) && (x<(x5+40)) && (y5<y) && (y<(y5+56)) && button_down () )
+then ((*do*)sound 264 40;
+(*mi*)sound 330 40;
+(*la*)sound 440 40;
+(*mi*)sound 330 40;
+(*la*)sound 440 40;
+(*si*)sound 495 40;
+(*la*)sound 440 40;
+(*si*)sound 495 40;
+(*mi+1*)sound 660 40;close_graph ();programme_ultime 5)
+else ();
+    let x6,y6 = (size_x ()/2 +2*size_x ()/10 -20),(size_y ()*2/5 -28) in 
+if ( (x6<x) && (x<(x6+40)) && (y6<y) && (y<(y6+56)) && button_down () )
+then ((*do*)sound 264 40;
+(*mi*)sound 330 40;
+(*la*)sound 440 40;
+(*mi*)sound 330 40;
+(*la*)sound 440 40;
+(*si*)sound 495 40;
+(*la*)sound 440 40;
+(*si*)sound 495 40;
+(*mi+1*)sound 660 40;close_graph ();programme_ultime 6)
+else ();
+    let x7,y7 = (size_x ()/2 +3*size_x ()/10 -20),(size_y ()*2/5 -28) in 
+if ( (x7<x) && (x<(x7+40)) && (y7<y) && (y<(y7+56)) && button_down () )
+then ((*do*)sound 264 40;
+(*mi*)sound 330 40;
+(*la*)sound 440 40;
+(*mi*)sound 330 40;
+(*la*)sound 440 40;
+(*si*)sound 495 40;
+(*la*)sound 440 40;
+(*si*)sound 495 40;
+(*mi+1*)sound 660 40;close_graph ();programme_ultime 7)
+else ();
+done;;
+
+
+let click_or_no_click () =
+  open_graph "720x630";
+  set_window_title "Tetris par Loshan et Ramadan";
+  set_bckgrnd 0x051036;
+  trace_TETRIS (); trace_play 0xA0A0A0; trace_quit 0xA0A0A0;
+  while true do
+    let x, y = mouse_pos () in
+      let xp0, xp1, yp0, yp1 = ((size_x ()) / 2 - 11 * 7), ((size_x ()) / 2 + 11 * 7), ((size_y () * 2 / 5) - 22), ((size_y () * 2 / 5) + 22) in
+        if ((xp0 < x) && (x < xp1) && (yp0 < y) && (y < yp1))
+        then (trace_play 0xFEE12B;
+            if button_down () then (close_graph (); selec_lvl ()))
+        else (trace_play 0xA0A0A0; ());
+        let xq0, xq1, yq0, yq1 = ((size_x ()) / 2 - 11 * 6), ((size_x ()) / 2 + 11 * 6), ((size_y () * 1 / 5) - 22), ((size_y () * 1 / 5) + 22) in
+          if ((xq0 < x) && (x < xq1) && (yq0 < y) && (y < yq1))
+          then (trace_quit 0xFEE12B;
+              if button_down () then (close_graph (); failwith "Jeu ferm�"))
+          else (trace_quit 0xA0A0A0; ());
+  done;;
+
+click_or_no_click () ;;
